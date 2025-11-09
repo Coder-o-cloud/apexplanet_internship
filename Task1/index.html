@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Project: Basics of Web Development (Satisfying UI)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* 1. Keyframes for the animated gradient header */
+        @keyframes gradient-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-text-animated {
+            background-size: 200% 100%;
+            animation: gradient-pan 5s linear infinite;
+        }
+
+        /* 2. Keyframes for the "bouncy" modal */
+        @keyframes modal-bounce-in {
+            0% {
+                transform: translateY(-20px) scale(0.9);
+                opacity: 0;
+            }
+            70% {
+                transform: translateY(0) scale(1.05);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease-out;
+        }
+        .modal-content {
+            /* Remove old transitions, use animation instead */
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .modal-open .modal-content {
+            animation: modal-bounce-in 0.4s ease-out forwards;
+        }
+
+        /* 3. Class for the shimmering gradient button hover */
+        .btn-gradient-animated {
+            background-size: 200% 100%;
+            transition: background-position 0.4s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .btn-gradient-animated:hover {
+            background-position: -100% 0; /* Shimmer effect */
+        }
+
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900 antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-16">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent mb-2 gradient-text-animated">
+                A Truly Dynamic Demo
+            </h1>
+            <p class="text-lg text-gray-500">HTML, CSS, and JS with a Satisfying Feel</p>
+        </header>
+
+        <main class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10">
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 border-b-2 border-gray-100 pb-2 mb-4">Project Overview</h2>
+                <p class="mb-4 leading-relaxed text-gray-700">This page demonstrates how to combine HTML, CSS, and JavaScript to create not just a functional page, but a satisfying user experience. Notice the subtle animations on the header, buttons, and modal pop-up.</p>
+            </section>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <section class="mb-8 md:mb-0 group" style="perspective: 1000px;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">3D Tilt Image</h3>
+                    <img src="https://placehold.co/600x400/6366f1/ffffff?text=Hover+Me!" 
+                         alt="Web Development placeholder image" 
+                         class="rounded-xl shadow-lg w-full h-auto object-cover transition-all duration-300 ease-in-out 
+                                /* These classes create the 3D tilt */
+                                group-hover:transform group-hover:scale-105 group-hover:-rotate-y-3 group-hover:rotate-x-2 group-hover:shadow-2xl">
+                </section>
+                
+                <section>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Interactive Elements</h3>
+                    <p class="text-gray-600 mb-4">The elements on this page are designed to provide clear, satisfying feedback. The link button shimmers and its icon moves, while the modal button provides a tactile 'click' and a bouncy pop-up.</p>
+                </section>
+            </div>
+
+            <section class="mt-12 text-center border-t-2 border-gray-100 pt-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Shimmering Button</h2>
+                <a href="https://developer.mozilla.org" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-violet-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                          /* classes for animation */
+                          group btn-gradient-animated
+                          /* Kept the satisfying click */
+                          transform hover:-translate-y-1 hover:shadow-xl active:scale-95 active:brightness-90">
+                    Learn at MDN
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform duration-300 ease-in-out group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </section>
+
+            <section class="mt-12 text-center border-t-2 border-gray-100 pt-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Bouncy Modal</h2>
+                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">Click this button to trigger the JavaScript modal. Notice the new 'bounce' animation as it appears.</p>
+                
+                <button id="interactive-button" class="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50
+                           /* class for animation */
+                           btn-gradient-animated
+                           /* Kept the satisfying click */
+                           transition-all transform hover:scale-110 hover:shadow-xl active:scale-95 active:brightness-90">
+                    Show Modal
+                </button>
+            </section>
+
+        </main>
+        
+        <footer class="text-center mt-12 text-gray-500">
+            <p>&copy; 2025 - My Internship Project by ApexPlanet Software Pvt Ltd</p>
+        </footer>
+
+    </div>
+
+    <div id="custom-alert" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-content bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-2xl font-bold text-gray-900 mt-4 mb-2">It Worked!</h3>
+            <p class="text-gray-600 mb-6">The JavaScript event was triggered successfully!</p>
+            
+            <button id="close-alert-button" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                           /* Kept the satisfying click */
+                           transition-all duration-200 ease-in-out active:scale-95 active:brightness-90">
+                Close
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // JavaScript logic remains identical.
+        document.addEventListener('DOMContentLoaded', () => {
+            const interactiveButton = document.getElementById('interactive-button');
+            const customAlert = document.getElementById('custom-alert');
+            const closeAlertButton = document.getElementById('close-alert-button');
+            const body = document.body;
+
+            const showAlert = () => {
+                customAlert.classList.remove('hidden');
+                body.classList.add('modal-open');
+            };
+
+            const closeAlert = () => {
+                customAlert.classList.add('hidden');
+                body.classList.remove('modal-open');
+            };
+
+            interactiveButton.addEventListener('click', showAlert);
+            closeAlertButton.addEventListener('click', closeAlert);
+
+            customAlert.addEventListener('click', (event) => {
+                if (event.target === customAlert) {
+                    closeAlert();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

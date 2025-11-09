@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Project: Advanced Styling and JavaScript</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* bg-slate-50 */
+        }
+        
+        /* Quiz option styling */
+        .quiz-option {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .quiz-option:hover {
+            background-color: #f1f5f9; /* bg-slate-100 */
+        }
+        .quiz-option.selected {
+            background-color: #cffafe; /* bg-cyan-100 */
+            border-color: #06b6d4; /* border-cyan-500 */
+        }
+        /* CHANGED: These classes are now used by the JavaScript for feedback */
+        .quiz-option.correct {
+            background-color: #dcfce7; /* bg-green-100 */
+            border-color: #22c55e; /* border-green-500 */
+            color: #166534; /* text-green-800 */
+            font-weight: 500;
+        }
+        .quiz-option.incorrect {
+            background-color: #fee2e2; /* bg-red-100 */
+            border-color: #ef4444; /* border-red-500 */
+            color: #991b1b; /* text-red-800 */
+        }
+
+        /* API Data card styling */
+        .joke-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .joke-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-teal-600">ApexPlanet</div>
+            <ul class="flex space-x-6 text-slate-600 font-medium">
+                <li><a href="#quiz" class="hover:text-teal-500 transition-colors">Quiz</a></li>
+                <li><a href="#api" class="hover:text-teal-500 transition-colors">API Fun</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-600 mb-2">Advanced JavaScript</h1>
+            <p class="text-lg text-slate-500">Task 3: Interactive Quiz & API Data Fetching</p>
+        </div>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+            <section id="quiz" class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-slate-700 mb-6">Web Dev Quiz</h2>
+                <div id="quiz-container">
+                    
+                    <div class="w-full bg-slate-200 rounded-full h-2.5 mb-5">
+                        <div id="progress-bar" class="bg-teal-500 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+                    </div>
+
+                    <p id="question" class="text-xl font-semibold mb-4"></p>
+                    <div id="options-container" class="space-y-3 mb-6"></div>
+                    
+                    <button id="next-btn" class="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:from-teal-600 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50 transition-all transform hover:scale-105">
+                        Check Answer
+                    </button>
+                </div>
+                <div id="quiz-results" class="hidden text-center">
+                    <h3 class="text-2xl font-bold text-slate-700 mb-4">Quiz Complete!</h3>
+                    <p class="text-lg mb-4">Your score: <span id="score" class="font-bold"></span></p>
+                    
+                    <button id="restart-btn" class="w-full bg-gradient-to-r from-sky-500 to-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:from-sky-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50">
+                        Try Again
+                    </button>
+                </div>
+            </section>
+
+            <section id="api" class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-slate-700 mb-6">Random Joke Generator</h2>
+                
+                <div id="joke-container" class="joke-card bg-gradient-to-br from-slate-100 to-slate-200 p-6 rounded-lg min-h-[150px] flex flex-col justify-center text-center mb-6">
+                    <p id="joke-setup" class="text-lg text-slate-700 font-medium"></p>
+                    <p id="joke-punchline" class="text-xl text-sky-600 font-bold mt-2"></p>
+                     <p id="api-loading" class="text-slate-500">Click the button to fetch a joke!</p>
+                </div>
+                
+                <button id="fetch-joke-btn" class="w-full bg-gradient-to-r from-sky-500 to-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:from-sky-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+                    Get New Joke
+                </button>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Task: Interactive Quiz ---
+            const quizData = [
+                {
+                    question: "What does CSS stand for?",
+                    options: ["Cascading Style Sheets", "Creative Style Sheets", "Computer Style Sheets", "Colorful Style Sheets"],
+                    answer: "Cascading Style Sheets"
+                },
+                {
+                    question: "Which HTML tag is used to define an internal style sheet?",
+                    options: ["<script>", "<css>", "<style>"],
+                    answer: "<style>"
+                },
+                {
+                    question: "What is the correct JavaScript syntax to change the content of an HTML element?",
+                    options: ["document.getElementById('...').innerHTML = '...'", "document.getElement('...').content = '...'", "#demo.innerHTML = '...'"],
+                    answer: "document.getElementById('...').innerHTML = '...'"
+                },
+                {
+                    question: "Which function is used to fetch data from an API?",
+                    options: ["get()", "fetch()", "retrieve()", "post()"],
+                    answer: "fetch()"
+                },
+                // CHANGED: Added one more question
+                {
+                    question: "What keyword pauses execution in an 'async' function until a Promise settles?",
+                    options: ["await", "pause", "wait", "delay"],
+                    answer: "await"
+                }
+            ];
+
+            const questionEl = document.getElementById('question');
+            const optionsContainerEl = document.getElementById('options-container');
+            const nextBtn = document.getElementById('next-btn');
+            const quizContainer = document.getElementById('quiz-container');
+            const quizResults = document.getElementById('quiz-results');
+            const scoreEl = document.getElementById('score');
+            const restartBtn = document.getElementById('restart-btn');
+            const progressBar = document.getElementById('progress-bar'); // CHANGED: Added progress bar element
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let selectedOption = null;
+            let answered = false; // CHANGED: State to track if user has answered
+
+            function loadQuiz() {
+                if (currentQuestionIndex < quizData.length) {
+                    // CHANGED: Reset states for new question
+                    selectedOption = null;
+                    answered = false;
+                    nextBtn.textContent = 'Check Answer'; // Reset button text
+                    
+                    const currentQuestion = quizData[currentQuestionIndex];
+                    questionEl.textContent = currentQuestion.question;
+                    optionsContainerEl.innerHTML = '';
+
+                    // CHANGED: Update progress bar
+                    const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+                    progressBar.style.width = `${progressPercent}%`;
+
+                    currentQuestion.options.forEach(optionText => {
+                        const option = document.createElement('div');
+                        option.textContent = optionText;
+                        option.className = 'quiz-option p-3 border-2 border-slate-200 rounded-lg cursor-pointer';
+                        
+                        option.addEventListener('click', () => {
+                            // CHANGED: Only allow selection if not already answered
+                            if (!answered) { 
+                                document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+                                option.classList.add('selected');
+                                selectedOption = option;
+                            }
+                        });
+                        optionsContainerEl.appendChild(option);
+                    });
+                } else {
+                    // Show results
+                    progressBar.style.width = '100%'; // Full progress on results
+                    quizContainer.classList.add('hidden');
+                    scoreEl.textContent = `${score} / ${quizData.length}`;
+                    quizResults.classList.remove('hidden');
+                }
+            }
+            
+            // CHANGED: Reworked nextBtn logic for instant feedback
+            nextBtn.addEventListener('click', () => {
+                // State 1: User has NOT answered yet.
+                if (!answered) {
+                    if (selectedOption) {
+                        answered = true;
+                        const correctAnswer = quizData[currentQuestionIndex].answer;
+                        
+                        // Disable all options
+                        document.querySelectorAll('.quiz-option').forEach(opt => {
+                            opt.style.pointerEvents = 'none';
+                            // Show the correct answer
+                            if (opt.textContent === correctAnswer) {
+                                opt.classList.add('correct');
+                            }
+                        });
+
+                        // Check user's selected option
+                        if (selectedOption.textContent === correctAnswer) {
+                            score++;
+                            selectedOption.classList.remove('selected');
+                            selectedOption.classList.add('correct');
+                        } else {
+                            selectedOption.classList.remove('selected');
+                            selectedOption.classList.add('incorrect');
+                        }
+                        
+                        // Change button text to advance
+                        nextBtn.textContent = (currentQuestionIndex === quizData.length - 1) ? 'Submit Quiz' : 'Next Question';
+
+                    } else {
+                        alert('Please select an option!');
+                    }
+                // State 2: User HAS answered. Move to next question.
+                } else {
+                    currentQuestionIndex++;
+                    loadQuiz();
+                }
+            });
+
+            restartBtn.addEventListener('click', () => {
+                currentQuestionIndex = 0;
+                score = 0;
+                quizResults.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                loadQuiz(); // This will also reset the progress bar and button text
+            });
+
+            loadQuiz(); // Initial load
+
+
+            // --- Task: Fetch Data from an API ---
+            const fetchJokeBtn = document.getElementById('fetch-joke-btn');
+            const jokeSetupEl = document.getElementById('joke-setup');
+            const jokePunchlineEl = document.getElementById('joke-punchline');
+            const apiLoadingEl = document.getElementById('api-loading');
+
+            // CHANGED: Switched to a new API (JokeAPI) for more variety and filtering
+            const fetchJoke = async () => {
+                jokeSetupEl.textContent = '';
+                jokePunchlineEl.textContent = '';
+                apiLoadingEl.textContent = 'Fetching joke...';
+
+                try {
+                    // This API filters out NSFW, religious, political, racist, sexist, and explicit jokes
+                    const response = await fetch('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                         throw new Error(`API returned an error: ${data.message}`);
+                    }
+                    
+                    apiLoadingEl.textContent = '';
+                    jokeSetupEl.textContent = data.setup;
+                    
+                    // Show punchline after a delay
+                    setTimeout(() => {
+                        jokePunchlineEl.textContent = data.delivery; // CHANGED: Key is 'delivery' not 'punchline'
+                    }, 1500);
+
+                } catch (error) {
+                    apiLoadingEl.textContent = 'Failed to fetch joke. Please try again!';
+                    console.error("Fetch error:", error);
+                }
+            };
+
+            fetchJokeBtn.addEventListener('click', fetchJoke);
+
+        });
+    </script>
+</body>
+</html>

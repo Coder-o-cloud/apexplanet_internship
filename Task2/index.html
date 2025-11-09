@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Project: Advanced Web Development</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* ✨ New gradient bg */
+            background: #f5f7fa;
+            overflow-x: hidden; /* Hide horizontal scroll from blobs */
+        }
+
+        /* ✨ --- Animated Gradient Blobs (Background) --- */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            filter: blur(100px);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
+        
+        /* Blob 1 (Teal) */
+        body::before {
+            width: 400px;
+            height: 400px;
+            background: #14b8a6; /* teal-500 */
+            top: -100px;
+            left: -100px;
+            animation: blob-float 15s infinite alternate;
+        }
+
+        /* Blob 2 (Sky) */
+        body::after {
+            width: 500px;
+            height: 500px;
+            background: #0ea5e9; /* sky-500 */
+            bottom: -150px;
+            right: -150px;
+            animation: blob-float 20s infinite alternate-reverse;
+        }
+
+        @keyframes blob-float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(200px) translateX(100px); }
+        }
+
+        /* ✨ --- Glassmorphism & 3D Tilt Cards --- */
+        .card-container {
+            perspective: 1000px; /* Activates 3D space for children */
+        }
+        .card {
+            /* ✨ The Glassmorphism Effect */
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem; /* rounded-3xl */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            /* ✨ 3D Tilt Transition */
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .card:hover {
+            /* ✨ The 3D Tilt Effect */
+            transform: rotateX(2deg) rotateY(-3deg) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ✨ --- "Glow" Form Styles --- */
+        .form-input {
+            transition: all 0.3s ease;
+            background: #f8fafc; /* bg-slate-50 */
+        }
+        .form-input:focus {
+            /* ✨ "Glow" effect on focus */
+            background: #fff;
+            box-shadow: 0 0 0 3px rgb(20 184 166 / 0.2); /* teal glow */
+            border-color: #0d9488; /* teal-600 */
+        }
+        .form-input.invalid {
+            border-color: #ef4444; /* red-500 */
+            box-shadow: 0 0 0 3px rgb(239 68 68 / 0.2); /* red glow */
+        }
+        
+        .error-message {
+            transition: all 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            font-size: 0.875rem; /* text-sm */
+        }
+        .form-input.invalid + .error-message {
+            max-height: 5rem;
+            opacity: 1;
+            margin-top: 0.25rem; /* mt-1 */
+        }
+
+        /* ✨ Form success animation */
+        #form-content, #form-success-message {
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        #form-success-message {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+
+        /* ✨ "Glow" Button Style */
+        .btn-glow {
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            transform: scale(1.03) translateY(-2px);
+            /* ✨ "Glow" shadow */
+            box-shadow: 0 10px 20px -5px var(--glow-color, rgba(0,0,0,0.2));
+        }
+
+        /* ✨ --- To-Do List Animations --- */
+        .todo-item {
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: scale(1);
+            opacity: 1;
+            /* ✨ Added cursor for dragging */
+            cursor: grab;
+        }
+        /* ✨ Animation for adding new item */
+        .todo-item.new {
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+        }
+        /* ✨ Style for item being dragged */
+        .todo-item.dragging {
+            opacity: 0.5;
+            background: #e0f2fe; /* light-sky-100 */
+            cursor: grabbing;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+        /* ✨ Style for completed item */
+        .todo-item.completed {
+            opacity: 0.6;
+            background: #f8fafc; /* slate-50 */
+        }
+        .todo-item.completed span {
+            text-decoration: line-through;
+            color: #64748b; /* slate-500 */
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <header class="bg-white/90 shadow-sm backdrop-blur-md sticky top-0 z-10 border-b border-slate-200/75">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-sky-600">
+                ApexPlanet
+            </div>
+            <ul class="flex space-x-6 text-slate-600 font-medium">
+                <li><a href="#" class="hover:text-teal-500 transition-colors">Home</a></li>
+                <li><a href="#contact" class="hover:text-teal-500 transition-colors">Contact</a></li>
+                <li><a href="#todo" class="hover:text-teal-500 transition-colors">To-Do List</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 md:py-16">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-sky-700 mb-2">
+                Advanced Web Interaction
+            </h1>
+            <p class="text-lg text-slate-500">Showcasing Modern UI, Forms, and DOM Dynamics</p>
+        </div>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-12 card-container">
+
+            <section id="contact" class="card p-6 md:p-8 relative overflow-hidden">
+                <div id="form-success-message" class="absolute inset-0 flex flex-col justify-center items-center p-8" style="display: none;">
+                    <div class="text-green-500 bg-green-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-700">Thank You!</h3>
+                    <p class="text-slate-500 mt-1">Your message has been sent.</p>
+                </div>
+                
+                <div id="form-content">
+                    <h2 class="text-3xl font-bold text-slate-700 mb-6">Contact Us</h2>
+                    <form id="contact-form" novalidate>
+                        <div class="mb-5">
+                            <label for="name" class="block font-medium text-slate-700 mb-2">Name</label>
+                            <input type="text" id="name" name="name" class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none" required>
+                            <p class="error-message text-red-500">This field is required.</p>
+                        </div>
+                        <div class="mb-5">
+                            <label for="email" class="block font-medium text-slate-700 mb-2">Email</label>
+                            <input type="email" id="email" name="email" class="form-input w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none" required>
+                            <p class="error-message text-red-500">Please enter a valid email address.</p>
+                        </div>
+                        <button type="submit" class="btn-glow w-full bg-teal-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-teal-600 focus:outline-none" style="--glow-color: rgb(20 184 166 / 0.4);">
+                            Submit Message
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="todo" class="card p-6 md:p-8">
+                <h2 class="text-3xl font-bold text-slate-700 mb-6">Drag & Drop To-Do List</h2>
+                <div class="flex mb-4">
+                    <input type="text" id="todo-input" placeholder="Add a new task..." class="form-input flex-grow px-4 py-3 border border-slate-300 rounded-l-lg focus:outline-none" style="--glow-color: rgb(59 130 246 / 0.2);">
+                    <button id="add-todo-btn" class="btn-glow bg-sky-500 text-white font-bold px-6 py-3 rounded-r-lg hover:bg-sky-600 focus:outline-none" style="--glow-color: rgb(14 165 233 / 0.4);">Add</button>
+                </div>
+                
+                <ul id="todo-list" class="space-y-3">
+                    <li id="empty-state-active" class="text-center text-slate-400 p-4">No active tasks.</li>
+                    
+                    <li id="completed-divider" class="pt-4 mt-4 border-t border-slate-200" style="display: none;">
+                        <h3 class="font-semibold text-slate-500">Completed</h3>
+                    </li>
+
+                    <li id="empty-state-completed" class="text-center text-slate-400 p-4" style="display: none;">No completed tasks.</li>
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- 1. Contact Form ---
+        const contactForm = document.getElementById('contact-form');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const formContent = document.getElementById('form-content');
+        const successMessage = document.getElementById('form-success-message');
+
+        contactForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            let isFormValid = true;
+
+            // Validate Name
+            isFormValid = validateField(nameInput, nameInput.value.trim() !== '') && isFormValid;
+            
+            // Validate Email
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            isFormValid = validateField(emailInput, emailPattern.test(emailInput.value.trim())) && isFormValid;
+
+            if (isFormValid) {
+                // ✨ Show success message with animation
+                formContent.style.opacity = '0';
+                formContent.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    formContent.style.display = 'none';
+                    successMessage.style.display = 'flex';
+                    // Trigger reflow
+                    requestAnimationFrame(() => {
+                        successMessage.style.opacity = '1';
+                        successMessage.style.transform = 'scale(1)';
+                    });
+                }, 500); // Wait for fade-out
+            }
+        });
+        
+        function validateField(input, condition) {
+            if (!condition) {
+                input.classList.add('invalid');
+                return false;
+            } else {
+                input.classList.remove('invalid');
+                return true;
+            }
+        }
+
+        // --- 2. To-Do List ---
+        const todoInput = document.getElementById('todo-input');
+        const addTodoBtn = document.getElementById('add-todo-btn');
+        const todoList = document.getElementById('todo-list');
+        const emptyStateActive = document.getElementById('empty-state-active');
+        const completedDivider = document.getElementById('completed-divider');
+        const emptyStateCompleted = document.getElementById('empty-state-completed');
+        
+        let draggedItem = null;
+
+        const updateEmptyStates = () => {
+            const activeTasks = todoList.querySelectorAll('.todo-item:not(.completed)');
+            const completedTasks = todoList.querySelectorAll('.todo-item.completed');
+
+            emptyStateActive.style.display = activeTasks.length === 0 ? 'block' : 'none';
+            completedDivider.style.display = completedTasks.length > 0 ? 'block' : 'none';
+            emptyStateCompleted.style.display = (completedTasks.length === 0 && activeTasks.length > 0) ? 'block' : 'none';
+            
+            // Special case: if no tasks at all, hide completed empty state
+            if (activeTasks.length === 0 && completedTasks.length === 0) {
+                 emptyStateCompleted.style.display = 'none';
+            }
+        };
+
+        const addTask = () => {
+            const taskText = todoInput.value.trim();
+            if (taskText === '') return;
+
+            const listItem = document.createElement('li');
+            listItem.className = 'todo-item new flex justify-between items-center bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm';
+            listItem.draggable = true; // ✨ Make it draggable
+
+            listItem.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="task-checkbox h-5 w-5 rounded border-slate-300 text-sky-500 focus:ring-sky-500 cursor-pointer">
+                    <span class="text-slate-700">${taskText}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="priority-btn text-slate-300 hover:text-yellow-500 transition-colors" title="Mark as priority">
+                         <ion-icon name="star-outline" class="text-xl"></ion-icon>
+                    </button>
+                    <button class="remove-btn text-slate-400 hover:text-red-500 transition-colors" title="Remove task">
+                        <ion-icon name="trash-outline" class="text-xl"></ion-icon>
+                    </button>
+                </div>
+            `;
+
+            // Insert before the empty state or the completed divider
+            todoList.insertBefore(listItem, emptyStateActive);
+
+            // ✨ Animate the new item in
+            requestAnimationFrame(() => {
+                listItem.classList.remove('new');
+            });
+
+            // --- Add Event Listeners for the new item ---
+
+            // ✨ Drag & Drop Listeners
+            listItem.addEventListener('dragstart', () => {
+                draggedItem = listItem;
+                setTimeout(() => listItem.classList.add('dragging'), 0);
+            });
+            
+            listItem.addEventListener('dragend', () => {
+                setTimeout(() => {
+                    draggedItem.classList.remove('dragging');
+                    draggedItem = null;
+                }, 0);
+            });
+
+            // ✨ Checkbox Listener (for completing task)
+            listItem.querySelector('.task-checkbox').addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    listItem.classList.add('completed');
+                    // Move to end of list
+                    todoList.appendChild(listItem);
+                } else {
+                    listItem.classList.remove('completed');
+                    // Move back to active list
+                    todoList.insertBefore(listItem, completedDivider);
+                }
+                updateEmptyStates();
+            });
+
+            // ✨ Priority Button Listener
+            listItem.querySelector('.priority-btn').addEventListener('click', (e) => {
+                const btn = e.currentTarget;
+                const icon = btn.querySelector('ion-icon');
+                btn.classList.toggle('text-yellow-400');
+                if (btn.classList.contains('text-yellow-400')) {
+                    icon.setAttribute('name', 'star');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    icon.setAttribute('name', 'star-outline');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+
+            // ✨ Remove Button Listener
+            listItem.querySelector('.remove-btn').addEventListener('click', () => {
+                listItem.style.transform = 'scale(0.9)';
+                listItem.style.opacity = '0';
+                setTimeout(() => {
+                    listItem.remove();
+                    updateEmptyStates();
+                }, 400);
+            });
+
+            todoInput.value = '';
+            todoInput.focus();
+            updateEmptyStates();
+        };
+        
+        // --- Global Listeners for App ---
+
+        addTodoBtn.addEventListener('click', addTask);
+        todoInput.addEventListener('keypress', (e) => e.key === 'Enter' && addTask());
+
+        // ✨ Drag & Drop logic for the whole list
+        todoList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(todoList, e.clientY);
+            if (afterElement == null) {
+                if (!draggedItem.classList.contains('completed')) {
+                     todoList.insertBefore(draggedItem, completedDivider); // Don't drop active tasks in completed
+                }
+            } else {
+                 if (!draggedItem.classList.contains('completed') && afterElement.classList.contains('completed')) {
+                     return; // Don't allow dropping active before completed
+                 }
+                 if (draggedItem.classList.contains('completed') && !afterElement.classList.contains('completed') && afterElement.id !== 'completed-divider') {
+                     return; // Don't allow dropping completed before active
+                 }
+                todoList.insertBefore(draggedItem, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.todo-item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // Initial check
+        updateEmptyStates();
+    });
+    </script>
+</body>
+</html>
